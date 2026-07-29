@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word by word · IELTS Vocabulary</title>
+<style>
+  :root{
+    --navy:#1c2b3a; --navy-deep:#141f2b; --cream:#f3efe6; --cream-soft:#faf7f0;
+    --clay:#c98a5e; --line:rgba(28,43,58,0.12);
+    --sans:'Segoe UI', system-ui, -apple-system, sans-serif;
+    --serif:Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--cream);font-family:var(--sans);color:var(--navy);
+       display:flex;justify-content:center;padding:28px 16px}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .frame{width:100%;max-width:480px;background:var(--cream-soft);border-radius:20px;
+    border:1px solid var(--line);box-shadow:0 18px 50px -30px rgba(20,31,43,.55);
+    padding:26px 24px 18px}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--clay);font-weight:700}
+  h1{font-family:var(--serif);font-size:30px;margin:4px 0 0;font-weight:600;letter-spacing:-.01em}
+  .pw{text-align:right;flex-shrink:0}
+  .pnum{font-family:var(--serif);font-size:26px;font-weight:600;line-height:1}
+  .pslash{font-size:15px;color:rgba(28,43,58,.4);font-weight:400}
+  .plabel{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,43,58,.5);margin-top:3px}
+  .bar{height:5px;background:rgba(28,43,58,.08);border-radius:4px;margin:16px 0 22px;overflow:hidden}
+  .barfill{height:100%;background:var(--clay);border-radius:4px;transition:width .4s ease;width:0%}
+  .rest{animation:rise .4s ease;text-align:center}
+  .lead{font-family:var(--serif);font-size:18px;margin:4px 0 20px;font-style:italic}
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px}
+  .tile{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 6px}
+  .tnum{font-family:var(--serif);font-size:24px;font-weight:600}
+  .tlabel{font-size:10.5px;color:rgba(28,43,58,.55);margin-top:2px}
+  .primary{width:100%;padding:15px;background:var(--navy);color:var(--cream);border:none;
+    border-radius:12px;font-size:15.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .donenote{color:rgba(28,43,58,.6);font-size:14px;padding:10px 0 4px}
+  .settingrow{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;gap:10px;align-items:center}
+  .slabel{font-size:12.5px;color:rgba(28,43,58,.6)}
+  .chips{display:flex;gap:8px}
+  .chip{padding:7px 15px;border-radius:9px;border:1px solid var(--line);background:var(--cream-soft);
+    color:var(--navy);cursor:pointer;font-size:14px;font-weight:600;font-family:var(--sans)}
+  .chip.on{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+  .session{animation:rise .35s ease}
+  .stop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .counter{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(28,43,58,.5);font-weight:600}
+  .exit{background:none;border:none;color:rgba(28,43,58,.5);font-size:12.5px;cursor:pointer;
+    font-family:var(--sans);text-decoration:underline;text-underline-offset:3px}
+  .card{background:var(--navy);color:var(--cream);border-radius:16px;min-height:230px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    padding:34px 26px;cursor:pointer;box-shadow:0 20px 40px -26px rgba(20,31,43,.7);user-select:none}
+  .word{font-family:var(--serif);font-size:34px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+  .wordsm{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--clay);margin-bottom:14px}
+  .def{font-size:17px;line-height:1.5;color:var(--cream-soft);max-width:340px}
+  .taphint{margin-top:18px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(243,239,230,.4)}
+  .reveal{width:100%;margin-top:14px;padding:14px;background:var(--cream-soft);color:var(--navy);
+    border:1px solid var(--line);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .arow{display:flex;gap:10px;margin-top:14px}
+  .ans{flex:1;padding:15px;border-radius:12px;font-size:15.5px;font-weight:600;cursor:pointer;font-family:var(--sans);border:none}
+  .again{background:var(--cream-soft);color:var(--navy);border:1px solid var(--line)}
+  .got{background:var(--clay);color:#fff}
+  footer{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);text-align:center;
+    display:flex;justify-content:center;gap:18px}
+  .reset,.export{background:none;border:none;color:rgba(28,43,58,.4);font-size:11.5px;cursor:pointer;font-family:var(--sans)}
+  .hidden{display:none}
+  /* tabs */
+  .tabs{display:flex;gap:6px;background:rgba(28,43,58,.06);border-radius:11px;padding:4px;margin-bottom:20px}
+  .tab{flex:1;padding:9px;border:none;background:none;border-radius:8px;font-size:13.5px;font-weight:600;
+    color:rgba(28,43,58,.55);cursor:pointer;font-family:var(--sans)}
+  .tab.on{background:var(--cream-soft);color:var(--navy);box-shadow:0 1px 3px rgba(20,31,43,.12)}
+  /* glossary list */
+  .listView{animation:rise .35s ease}
+  .search{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:11px;background:var(--cream);
+    font-size:14px;font-family:var(--sans);color:var(--navy);margin-bottom:6px;outline:none}
+  .search:focus{border-color:var(--clay)}
+  .listmeta{font-size:11.5px;color:rgba(28,43,58,.45);margin:0 2px 12px;letter-spacing:.02em}
+  .list{max-height:52vh;overflow-y:auto;padding-right:4px}
+  .item{padding:12px 2px;border-bottom:1px solid var(--line);display:flex;gap:11px;align-items:flex-start}
+  .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;background:rgba(28,43,58,.18)}
+  .dot.learning{background:var(--clay)}
+  .dot.learned{background:#4f8a5b}
+  .itxt{flex:1;min-width:0}
+  .iword{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--navy);line-height:1.25}
+  .idef{font-size:13.5px;color:rgba(28,43,58,.68);line-height:1.45;margin-top:2px}
+  .legend{display:flex;gap:14px;justify-content:center;margin-top:12px;font-size:11px;color:rgba(28,43,58,.5)}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .empty{text-align:center;color:rgba(28,43,58,.45);font-size:14px;padding:30px 0}
+</style>
+</head>
+<body>
+<div class="frame">
+  <header>
+    <div>
+      <div class="kicker">Vocabulary · IELTS</div>
+      <h1>Word by word</h1>
+    </div>
+    <div class="pw" title="Words learned">
+      <div class="pnum"><span id="mastered">0</span><span class="pslash">/<span id="total">0</span></span></div>
+      <div class="plabel">learned</div>
+    </div>
+  </header>
+
+  <div class="bar"><div class="barfill" id="barfill"></div></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" id="tabStudy">Study</button>
+    <button class="tab" id="tabList">All words</button>
+  </div>
+
+  <!-- REST VIEW -->
+  <div class="rest" id="restView">
+    <p class="lead" id="lead">Small and steady. No need to rush.</p>
+    <div class="tiles">
+      <div class="tile"><div class="tnum" id="tDue">0</div><div class="tlabel">to review</div></div>
+      <div class="tile"><div class="tnum" id="tNew">0</div><div class="tlabel">new words</div></div>
+    </div>
+    <button class="primary" id="startBtn">Start</button>
+    <div class="donenote hidden" id="doneNote">All caught up. Come back tomorrow for your reviews.</div>
+  </div>
+
+  <!-- SESSION VIEW -->
+  <div class="session hidden" id="sessionView">
+    <div class="stop">
+      <span class="counter" id="counter">1 of 10</span>
+      <button class="exit" id="exitBtn">Done for now</button>
+    </div>
+    <div class="card" id="card"></div>
+    <button class="reveal" id="revealBtn">Show meaning</button>
+    <div class="arow hidden" id="arow">
+      <button class="ans again" id="againBtn">Again</button>
+      <button class="ans got" id="gotBtn">Got it</button>
+    </div>
+  </div>
+
+  <!-- LIST VIEW -->
+  <div class="listView hidden" id="listView">
+    <input class="search" id="search" type="text" placeholder="Search a word or meaning…" autocomplete="off">
+    <div class="listmeta" id="listMeta"></div>
+    <div class="list" id="list"></div>
+    <div class="legend">
+      <span><i class="dot"></i>not seen</span>
+      <span><i class="dot learning"></i>learning</span>
+      <span><i class="dot learned"></i>learned</span>
+    </div>
+  </div>
+
+  <footer>
+    <button class="reset" id="resetBtn">Reset progress</button>
+    <button class="export" id="backupBtn">Back up progress</button>
+  </footer>
+</div>
+
+<script>
+/* ── Deck: from the "Vocabulary for IELTS" notebook ── */
+const DECK = [
+  {w:"bond",d:"something that unites two things or a group"},
+  {w:"rivalry",d:"competition that lasts for a long time"},
+  {w:"temperament",d:"the emotional part of someone's character, esp. how likely they are to be happy or angry"},
+  {w:"milestone",d:"(milepost) a very important event in the development of something"},
+  {w:"acquire",d:"(formal) to obtain by buying; to get, gain"},
+  {w:"cognitive",d:"connected with thinking, knowing, and understanding"},
+  {w:"clumsy",d:"awkward in movement; not careful or skilful"},
+  {w:"reminisce",d:"to talk or think about pleasant events in your past"},
+  {w:"throw a tantrum",d:"to show a sudden angry outburst"},
+  {w:"bear in mind",d:"to keep something in mind"},
+  {w:"artery",d:"a main road or line; (anatomy) a large blood vessel"},
+  {w:"asset",d:"things a company owns that can be sold to pay debts"},
+  {w:"cravings",d:"(uncountable) a strong longing or desire"},
+  {w:"diagnosis",d:"the process of discovering what is wrong by examining closely"},
+  {w:"onset",d:"the beginning of something, esp. something bad"},
+  {w:"stroke",d:"a sudden interruption of blood supply to the brain"},
+  {w:"acute",d:"serious; intelligent, sharp; (illness) severe but short"},
+  {w:"alternate",d:"every other; two alternate things placed one after another in a regular pattern"},
+  {w:"brisk",d:"quick and full of energy"},
+  {w:"chronic",d:"continuing for a long time; extremely bad"},
+  {w:"counteract",d:"to reduce or prevent the bad effect of something by doing something with the opposite effect"},
+  {w:"curb",d:"to control and limit something to prevent a harmful effect"},
+  {w:"diminish",d:"to reduce; to make someone/something seem less important than they are"},
+  {w:"eliminate",d:"to omit; to remove or get rid of completely"},
+  {w:"overdo",d:"to do something too much"},
+  {w:"disrupt",d:"to prevent something by causing problems"},
+  {w:"fulfilment",d:"the feeling of being happy and satisfied with your life; achievement; doing what you promised"},
+  {w:"outlook",d:"your general attitude to life; what is expected in the future; a view from a place"},
+  {w:"live life on the edge",d:"to live with many dangers and risks, esp. because you like extreme, unusual behaviour"},
+  {w:"live life to the full",d:"to fully enjoy one's life"},
+  {w:"controversy",d:"a serious argument about something that involves many people and continues for a long time"},
+  {w:"dissertation",d:"a long piece of writing on a particular subject, esp. for a university degree; thesis"},
+  {w:"grant",d:"(formal) to give or allow someone something they asked for; to admit something is true; concede"},
+  {w:"take it for granted (that)",d:"to believe something is true without making sure"},
+  {w:"take sb/sth for granted",d:"to expect someone/something will always be there, never noticing how useful they are"},
+  {w:"grant (noun)",d:"an amount of money given to someone, esp. by the government, for a particular purpose"},
+  {w:"scope",d:"(un) the range a subject/activity deals with; the opportunity to develop something"},
+  {w:"scope (verb)",d:"to look at something or someone to see what they are like"},
+  {w:"eligible",d:"able or allowed to do something, e.g. because you are the right age"},
+  {w:"studious",d:"spending a lot of time studying and reading"},
+  {w:"conjecture",d:"to form ideas/opinions without much information; a guess, hypothesis"},
+  {w:"dialect",d:"a form of a language spoken only in one area, slightly different from other forms"},
+  {w:"converse",d:"to talk; (the converse) the opposite of a fact or statement"},
+  {w:"emerge",d:"to appear and come out; to come out of a difficult experience; to begin to be known"},
+  {w:"evolve",d:"to develop and change gradually over a long period of time"},
+  {w:"signify",d:"to represent, mean, or be a sign of something; indicate"},
+  {w:"stutter",d:"to speak with difficulty, repeating the first consonant of some words; stammer"},
+  {w:"there is sth to be said for",d:"used to say something has advantages worth considering"},
+  {w:"needless to say",d:"of course"},
+  {w:"have a say",d:"to have the right or power to influence a decision"},
+  {w:"when all is said and done",d:"after considering everything (used for a final general judgment)"},
+  {w:"having said that",d:"used to add a contrasting point to what you just said"},
+  {w:"to say the least",d:"an understatement, implying the reality is more extreme (usually worse)"},
+  {w:"you can say that again",d:"used to express complete agreement"},
+  {w:"that is to say",d:"used to introduce a clearer or more precise restatement"},
+  {w:"budget (adj)",d:"cheap; low in cost"},
+  {w:"diverse",d:"very different from each other"},
+  {w:"quaint",d:"unusual and attractive, esp. in an old-fashioned way"},
+  {w:"fluctuate",d:"to vary; to change irregularly up and down"},
+  {w:"excavate",d:"to dig carefully to find ancient objects; to make a hole by digging up soil"},
+  {w:"consecutive",d:"following each other continuously; expressing consequence or result"},
+  {w:"erode",d:"to gradually destroy a surface (rock/soil); to gradually reduce power or confidence"},
+  {w:"infer",d:"to form an opinion that something is probably true from the information you have"},
+  {w:"predate",d:"to happen or exist earlier in history than something else"},
+  {w:"span",d:"to include all of a period of time; to stretch across a space (e.g. a bridge across a river)"},
+  {w:"burrow",d:"to dig down; to press close for warmth/safety (nestle); to search through things (rummage); a passage made by an animal"},
+  {w:"den",d:"the home of some animals (lions, foxes); a place for secret/illegal activity; a study room"},
+  {w:"ecological",d:"relating to the relation of living things to their environment"},
+  {w:"ecology",d:"the study of living things in relation to their environment"},
+  {w:"evolution",d:"the gradual change and development of an idea, situation, or object"},
+  {w:"fauna",d:"all the animals living in a particular area or period in history"},
+  {w:"flora",d:"all the plants that grow in a particular place or country"},
+  {w:"pesticide",d:"a chemical substance used to kill insects and small animals that destroy crops"},
+  {w:"herbicide",d:"a substance used to kill unwanted plants"},
+  {w:"predator",d:"an animal that kills and eats other animals (≠ prey); someone who exploits others' weakness"},
+  {w:"repercussions",d:"(usually plural) the effects of an action, esp. bad ones that continue; consequences"},
+  {w:"vermin",d:"small harmful animals/insects that destroy crops or spread disease; unpleasant, harmful people"},
+  {w:"arid",d:"very dry from lack of rain; lacking new or interesting qualities"},
+  {w:"catastrophic",d:"causing a lot of destruction, suffering, or death; extremely bad"},
+  {w:"domesticate",d:"to tame (an animal); to bring under human control"},
+  {w:"eradicate",d:"to completely get rid of something such as a disease or a social problem"},
+  {w:"cosmos",d:"the whole universe, esp. seen as an ordered system"},
+  {w:"cosmic",d:"relating to space or the universe; extremely large"},
+  {w:"crater",d:"a round hole in the ground made by an impact or explosion; the open top of a volcano"},
+  {w:"debris",d:"the pieces left after something is destroyed; scattered waste material"},
+  {w:"lunar",d:"relating to the Moon or travel to the Moon"},
+  {w:"terrestrial",d:"relating to the Earth; living on land rather than water"},
+  {w:"unmanned",d:"without a person inside/present (spacecraft, place)"},
+  {w:"acclimatize",d:"to become used to a new place, situation, or climate, or make someone become used to it"},
+  {w:"propel",d:"to move, drive, or push something forward; to push someone into a new situation"},
+  {w:"sustain",d:"to maintain; to suffer; to support"},
+  {w:"sustenance",d:"food that people or animals need to live; the act of keeping something going"},
+  {w:"simulate",d:"to produce something not real but with the appearance of being real; to pretend to feel"},
+  {w:"shaft",d:"a vertical passage in a building (e.g. a lift shaft); a passage"},
+  {w:"quarry",d:"a place where stone/sand is dug out; the person or animal being hunted; (verb) to dig stone"},
+  {w:"timber",d:"lumber; trees grown for wood; a wooden beam in the structure of a house"},
+  {w:"cramped",d:"crowded, without enough space; (of writing) too small to read"},
+  {w:"disposable",d:"meant to be used once or briefly then thrown away; available to be used"},
+  {w:"exterior",d:"the outside (≠ interior); calm behaviour that hides a different feeling"},
+  {w:"ornate",d:"covered with a lot of decoration"},
+  {w:"prefabricated",d:"built from standard-sized parts that can be put together anywhere"},
+  {w:"automate",d:"to start using computers and machines to do a job rather than people"},
+  {w:"condemn",d:"to disapprove of (as morally wrong); to punish; to declare officially unsafe to use"},
+  {w:"demolish",d:"to completely destroy a building; to prove an idea completely wrong; to defeat easily"},
+  {w:"haul",d:"to pull something heavy with a continuous steady movement"},
+  {w:"hoist",d:"to raise, lift, or pull something up, esp. using ropes"},
+  {w:"be hoist by your own petard",d:"(formal, often humorous) to be harmed by the plans you made to hurt others"},
+  {w:"patent",d:"an official right protecting an invention; copyright-like protection"},
+  {w:"telecommunications",d:"the sending and receiving of messages by phone, radio, television, etc."},
+  {w:"cutting edge",d:"the newest and most exciting stage in the development of something; an advantage over others"},
+  {w:"state-of-the-art",d:"using the most recent stage of technological development; the latest techniques or equipment"},
+  {w:"envisage",d:"to think that something is likely to happen in the future"},
+  {w:"demographics",d:"information about a group (e.g. people in an area); a population group targeted by advertisers"},
+  {w:"hindsight",d:"the ability to understand a situation only after it has happened"},
+  {w:"foresight",d:"the ability to imagine what is likely to happen and plan for it"},
+  {w:"forethought",d:"careful thought or planning before you do something"},
+  {w:"implication",d:"a possible future effect of an action; involvement in a crime; something suggested indirectly"},
+  {w:"joint venture",d:"a business activity begun by two or more people or companies working together"},
+  {w:"joint resolution",d:"(law) a decision agreed by both houses of the US Congress and signed by the president"},
+  {w:"projection",d:"a calculation about a future/past state based on current information; something that sticks out"},
+  {w:"statistics",d:"a set of numbers representing facts; the science of collecting and examining such numbers"},
+  {w:"ethnic",d:"relating to a particular race, nation, or tribe and their customs and traditions"},
+  {w:"sceptical",d:"tending to disagree with what others tell you; doubtful"},
+  {w:"diminishing returns",d:"when the profits/advantages you get stop increasing relative to the effort you make"},
+  {w:"dwindle",d:"(dwindle away) to gradually become less and less or smaller and smaller"},
+  {w:"migrate",d:"to go to live abroad, esp. to find work"},
+  {w:"emigrate",d:"to leave your own country in order to live in another"},
+  {w:"immigrate",d:"to come into a country in order to live there permanently"},
+  {w:"compromise",d:"an agreement reached after everyone accepts less than they first wanted; (verb) to act against your principles"},
+  {w:"infrastructure",d:"the basic systems a country/organisation needs to work: roads, railways, banks, etc."},
+  {w:"megacity",d:"a very large city, typically with a population over 10 million"},
+  {w:"resolution",d:"a decision, solution, promise, or determination; a clear, sharp picture"},
+  {w:"setback",d:"a problem that delays or prevents progress, or makes things worse"},
+  {w:"slum",d:"a house or area of a city in very bad condition where very poor people live; a very untidy place"},
+  {w:"booming",d:"increasing and successful"},
+  {w:"decent",d:"of good enough quality; morally acceptable; fair and kind; wearing enough clothes"},
+  {w:"staggering",d:"amazing; astonishing"},
+  {w:"aggravate",d:"to make worse; to irritate (≠ improve)"},
+  {w:"deteriorate",d:"to become worse"},
+  {w:"exacerbate",d:"to make a bad situation worse"},
+  {w:"linger",d:"(linger on) to continue to exist longer than usual or desirable; to stay somewhere longer"},
+  {w:"regulate",d:"to control an activity by rules; to make a machine/body work at a set speed or temperature"},
+  {w:"biodiversity",d:"the variety of plants and animals in a particular place"},
+  {w:"contaminate",d:"to make a place or substance dirty/harmful with chemicals or poison; to have a bad influence"},
+  {w:"deforestation",d:"the cutting down of forests over a large area"},
+  {w:"disposal",d:"the act of getting rid of something; (at sb's disposal) available for someone to use"},
+  {w:"emission",d:"a gas or substance sent into the air; the act of sending out light, heat, or gas"},
+  {w:"erosion",d:"the process by which rock/soil is gradually destroyed by wind, rain, or sea"},
+  {w:"fumes",d:"strong-smelling gas or smoke that is unpleasant to breathe in"},
+  {w:"strain",d:"worry, difficulty, or force; a particular type of animal or plant"},
+  {w:"devastating",d:"badly damaging; making someone feel extremely sad; very impressive; extremely attractive"},
+  {w:"feasible",d:"possible; able to be done"},
+  {w:"futile",d:"useless, pointless (≠ worthwhile)"},
+  {w:"insoluble",d:"impossible to solve"},
+  {w:"irreparable",d:"impossible to repair or put right"},
+  {w:"irreplaceable",d:"too special or valuable to be replaced"},
+  {w:"irreversible",d:"impossible to change back; that cannot be cured"},
+  {w:"liable",d:"likely or prone to something; legally responsible for the cost of something"},
+  {w:"pervasive",d:"existing everywhere; spreading through all parts"},
+  {w:"pristine",d:"extremely fresh or clean; in its original, unspoiled condition"},
+  {w:"sustainable",d:"able to continue without damaging the environment; able to continue for a long time"},
+  {w:"unattainable",d:"impossible to achieve"},
+  {w:"viable",d:"able to work successfully; able to live or develop (≠ non-viable)"},
+  {w:"dispose of",d:"to get rid of; to sell; to deal with; to defeat"},
+  {w:"dump",d:"to get rid of; to end a relationship; to put something down carelessly; to sell goods off cheaply"},
+  {w:"inexorable",d:"unstoppable; impossible to prevent"},
+  {w:"biofuel",d:"a fuel made from plants or animal waste used to produce heat or power"},
+  {w:"crisis",d:"an emergency; a time of great danger or difficulty"},
+  {w:"crisis of confidence",d:"a situation where people stop trusting something (e.g. the government)"},
+  {w:"crisis of conscience",d:"a situation causing serious moral doubt about what is right"},
+  {w:"hybrid",d:"an animal/plant from different breeds; something made from a mixture of two or more things"},
+  {w:"drastic",d:"extreme and sudden"},
+  {w:"unleaded",d:"(of petrol) not containing lead"},
+  {w:"conserve",d:"to preserve; to use a little water or energy so as not to waste it"},
+  {w:"nadir",d:"the time when a situation is at its worst (≠ zenith)"},
+  {w:"deplete",d:"to reduce the amount of something present or available"},
+  {w:"emit",d:"to send out gas, heat, light, or sound"},
+  {w:"expend",d:"to use or spend a lot of energy in order to do something"},
+  {w:"outweigh",d:"to be more important or valuable than something else"},
+  {w:"preserve",d:"to save; to make something continue without changing; to store food after treating it"},
+  {w:"retain",d:"to keep; to store inside something else; to remember information; to employ for a long time"},
+  {w:"labourer",d:"a person who does hard physical work, usually outdoors"},
+  {w:"niche",d:"a job or activity that suits you very well; an opportunity to sell a product"},
+  {w:"prospects",d:"(plural) chances of future success; (in prospect) likely to happen soon"},
+  {w:"hospitality",d:"friendly, generous treatment of guests or customers"},
+  {w:"endorse",d:"to give formal support or approval; to advertise; to sign the back of a cheque"},
+  {w:"deterrent",d:"something that makes someone less likely to act by showing it will be difficult or have bad results"},
+  {w:"nuclear deterrent",d:"the nuclear weapons a country keeps to prevent others from attacking it"},
+  {w:"imprisonment",d:"(uncountable) the state of being put in prison"},
+  {w:"intent",d:"intention (noun and adjective)"},
+  {w:"intrusion",d:"when something affects your private life in an unwanted way; an unwanted arrival"},
+  {w:"motive",d:"the reason someone does something, esp. when hidden; (motif) a repeated pattern for decoration"},
+  {w:"pickpocketing",d:"stealing from people's pockets or bags, esp. in crowds"},
+  {w:"prosecutor",d:"a lawyer trying to prove in court that someone is guilty of a crime"},
+  {w:"reckless",d:"not caring about the possible bad or dangerous results of your actions"},
+  {w:"smuggling",d:"the crime of taking something illegally from one country to another"},
+  {w:"law-abiding",d:"respectful of the law and obeying it"},
+  {w:"on trial",d:"being examined in a court of law; being tested"},
+  {w:"unintentional",d:"not done on purpose"},
+  {w:"victimless",d:"(of a crime) not directly harming another person"},
+  {w:"abide by",d:"to accept and obey a decision, rule, or agreement even if you don't agree with it"},
+  {w:"abolish",d:"to officially end a law or system, esp. one that has existed a long time"},
+  {w:"deter",d:"to stop someone doing something by making them realise it will be difficult or have bad results"},
+  {w:"enforce",d:"to make people obey a rule or law; to make something happen by force"},
+  {w:"perpetrate",d:"to carry out something morally wrong or illegal (perpetrate a crime)"},
+  {w:"resent",d:"to feel angry or upset about something someone has done, esp. because it seems unfair"},
+  {w:"violate",d:"to disobey a law or agreement; to break or infringe on someone's rights"},
+  {w:"accept the consequences",d:"to take responsibility for the results of your actions"},
+  {w:"impose a fine",d:"(of a judge) to officially order someone to pay a penalty"},
+  {w:"pass a law",d:"to officially make a proposal into law"},
+  {w:"bias",d:"an unfair preference for or against someone or something"},
+  {w:"censorship",d:"the control or suppression of what can be said, written, or shown"},
+  {w:"credibility",d:"the quality of deserving to be believed and trusted"},
+  {w:"credibility gap",d:"the difference between what someone says and what they do"},
+  {w:"exposé",d:"a story in a newspaper or on TV revealing the truth about something dishonest or shocking"},
+  {w:"free press",d:"news media that can report without government control"},
+  {w:"ideology",d:"a set of beliefs, esp. political or social ones, held by a group"},
+  {w:"mass media",d:"the means of communication that reach large numbers of people"},
+  {w:"paparazzi",d:"(plural) photographers who follow famous people to take pictures"},
+  {w:"publicity",d:"the attention someone/something gets from the media; making people aware of a product"},
+  {w:"tabloid",d:"a newspaper with small pages and many photos, mainly about celebrities rather than serious news"},
+  {w:"broadsheet",d:"a serious newspaper printed on large sheets"},
+  {w:"attention-grabbing",d:"designed to make people notice it immediately"},
+  {w:"biased",d:"unfairly preferring one side over another"},
+  {w:"controversial",d:"causing a lot of disagreement because people have strong opinions about it"},
+  {w:"distort",d:"to change something to make it unclear or untrue; to report in a misleading way"},
+  {w:"intrusive",d:"affecting someone's private life in an unwanted and annoying way"},
+  {w:"mainstream",d:"the most usual ideas or methods; accepted by most people"},
+  {w:"sensationalist",d:"(of media) presenting news to cause maximum shock or excitement"},
+  {w:"exploit",d:"to treat someone unfairly for gain; to use fully and effectively; to develop resources for industry"},
+  {w:"intrude",d:"to interrupt or become involved in someone's private affairs in an unwanted way"},
+  {w:"invade",d:"to enter a place with an army to attack or take control; to intrude on"},
+  {w:"publicize",d:"to make something widely known to the public"},
+  {w:"aesthetics",d:"(un) the study of beauty, esp. in art; a set of principles about beauty or art"},
+  {w:"artefact",d:"an object such as a tool or weapon made in the past and historically important"},
+  {w:"intimacy",d:"a state of close personal relationship; a situation of being in private with someone"},
+  {w:"sculptor",d:"an artist who makes sculptures"},
+  {w:"sculpture",d:"a work of art made by shaping stone, wood, metal, etc."},
+  {w:"stimulus",d:"something that helps a process develop faster; something that makes someone or something react"},
+  {w:"burgeon",d:"(formal) to grow or develop quickly"},
+  {w:"eclectic",d:"including a mixture of many different things, esp. so you can use the best of them; diverse"},
+  {w:"prominent",d:"important; in a place that is easily seen; large and sticking out"},
+  {w:"choreograph",d:"to arrange how dancers should move during a performance"},
+  {w:"provoke",d:"to cause a reaction or feeling, esp. a sudden one; to make someone angry, esp. deliberately"},
+  {w:"transcend",d:"(formal) to go beyond the usual limits of something"},
+];
+
+/* ── spaced repetition (Leitner) ── */
+const BOX_INTERVALS=[0,1,2,4,7,15];       // days by box 1..5
+const DAY=864e5;
+const KEY="ielts-vocab-progress-v1";
+const DEFAULT_NEW=10;
+
+function todayStamp(){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime();}
+function blank(){return{cards:{},lastDate:todayStamp(),introducedToday:0,dailyNew:DEFAULT_NEW};}
+
+let state=blank();
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){const s=JSON.parse(raw);
+      if(s.lastDate!==todayStamp()){s.introducedToday=0;s.lastDate=todayStamp();}
+      state=Object.assign(blank(),s);
+    }
+  }catch(e){/* private mode etc — stays in memory */}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+/* ── session ── */
+let queue=[],idx=0,flipped=false,doneCount=0;
+
+const $=id=>document.getElementById(id);
+
+function countDue(){const now=todayStamp();let n=0;for(const c of DECK){const p=state.cards[c.w];if(p&&p.due<=now)n++;}return n;}
+function countMastered(){let n=0;for(const w in state.cards){if(state.cards[w].box>=5)n++;}return n;}
+function countStarted(){return Object.keys(state.cards).length;}
+function newLeft(){return DECK.length-countStarted();}   // all unseen words, no daily cap
+
+function renderRest(){
+  $("sessionView").classList.add("hidden");
+  $("listView").classList.add("hidden");
+  $("restView").classList.remove("hidden");
+  setTab("study");
+  const due=countDue(),nl=newLeft();
+  $("tDue").textContent=due;
+  $("tNew").textContent=nl;
+  const has=due+nl>0;
+  $("lead").textContent=has?"Small and steady. No need to rush.":"You're all caught up for today.";
+  $("startBtn").classList.toggle("hidden",!has);
+  $("doneNote").classList.toggle("hidden",has);
+  if(has)$("startBtn").textContent="Start — "+(due+nl)+" cards";
+  renderTop();
+}
+function renderTop(){
+  const m=countMastered();
+  $("mastered").textContent=m;
+  $("total").textContent=DECK.length;
+  $("barfill").style.width=(m/DECK.length*100)+"%";
+}
+
+function buildSession(){
+  const now=todayStamp();
+  const due=DECK.filter(c=>{const p=state.cards[c.w];return p&&p.due<=now;}).map(c=>c.w);
+  const fresh=DECK.filter(c=>!state.cards[c.w]).map(c=>c.w);
+  queue=due.concat(fresh);
+  for(let i=queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[queue[i],queue[j]]=[queue[j],queue[i]];}
+  idx=0;doneCount=0;flipped=false;
+  if(queue.length===0){renderRest();return;}
+  $("restView").classList.add("hidden");
+  $("listView").classList.add("hidden");
+  $("sessionView").classList.remove("hidden");
+  renderCard();
+}
+
+function renderCard(){
+  if(idx>=queue.length){finishSession();return;}
+  const c=DECK.find(x=>x.w===queue[idx]);
+  $("counter").textContent=(doneCount+1)+" of "+queue.length;
+  const card=$("card");
+  if(!flipped){
+    card.innerHTML='<div class="word"></div><div class="taphint">tap to see the meaning</div>';
+    card.querySelector(".word").textContent=c.w;
+    $("revealBtn").classList.remove("hidden");
+    $("arow").classList.add("hidden");
+  }else{
+    card.innerHTML='<div class="wordsm"></div><div class="def"></div>';
+    card.querySelector(".wordsm").textContent=c.w;
+    card.querySelector(".def").textContent=c.d;
+    $("revealBtn").classList.add("hidden");
+    $("arow").classList.remove("hidden");
+  }
+}
+function flip(){flipped=!flipped;renderCard();}
+
+function answer(known){
+  const word=queue[idx];
+  const prev=state.cards[word]||{box:0,due:todayStamp()};
+  const wasNew=!state.cards[word];
+  if(known){
+    const box=Math.min(5,(prev.box||0)+1);
+    state.cards[word]={box:box,due:todayStamp()+BOX_INTERVALS[box]*DAY};
+  }else{
+    state.cards[word]={box:1,due:todayStamp()};
+  }
+  if(wasNew)state.introducedToday=(state.introducedToday||0)+1;
+  state.lastDate=todayStamp();
+  save();
+  doneCount++;
+  flipped=false;
+  if(!known){
+    queue.splice(idx,1);queue.push(word);   // re-queue at end, idx stays
+  }else{
+    idx++;
+  }
+  renderTop();
+  renderCard();
+}
+
+function finishSession(){
+  $("card").innerHTML='<div class="word">Nicely done.</div><div class="taphint">session complete</div>';
+  $("revealBtn").classList.add("hidden");
+  $("arow").classList.add("hidden");
+  setTimeout(renderRest,900);
+}
+
+/* ── tabs + glossary list ── */
+function setTab(which){
+  $("tabStudy").classList.toggle("on",which==="study");
+  $("tabList").classList.toggle("on",which==="list");
+}
+function statusOf(word){
+  const p=state.cards[word];
+  if(!p)return"";
+  return p.box>=5?"learned":"learning";
+}
+function renderList(filter){
+  const f=(filter||"").trim().toLowerCase();
+  const box=$("list");box.innerHTML="";
+  let shown=0;
+  for(const c of DECK){
+    if(f && !(c.w.toLowerCase().includes(f)||c.d.toLowerCase().includes(f)))continue;
+    shown++;
+    const st=statusOf(c.w);
+    const item=document.createElement("div");item.className="item";
+    const dot=document.createElement("i");dot.className="dot"+(st?" "+st:"");
+    const txt=document.createElement("div");txt.className="itxt";
+    const w=document.createElement("div");w.className="iword";w.textContent=c.w;
+    const d=document.createElement("div");d.className="idef";d.textContent=c.d;
+    txt.appendChild(w);txt.appendChild(d);
+    item.appendChild(dot);item.appendChild(txt);
+    box.appendChild(item);
+  }
+  if(shown===0){box.innerHTML='<div class="empty">No words match that search.</div>';}
+  const learned=countMastered(),learning=countStarted()-learned;
+  $("listMeta").textContent=DECK.length+" words · "+learned+" learned · "+learning+" learning";
+}
+function openList(){
+  $("restView").classList.add("hidden");
+  $("sessionView").classList.add("hidden");
+  $("listView").classList.remove("hidden");
+  setTab("list");
+  renderList($("search").value);
+}
+
+/* ── backup / restore ── */
+function backup(){
+  const blob=new Blob([JSON.stringify(state)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="vocab-progress-backup.json";
+  a.click();
+}
+
+/* ── wire up ── */
+$("startBtn").onclick=buildSession;
+$("card").onclick=flip;
+$("revealBtn").onclick=()=>{flipped=true;renderCard();};
+$("againBtn").onclick=()=>answer(false);
+$("gotBtn").onclick=()=>answer(true);
+$("exitBtn").onclick=renderRest;
+$("tabStudy").onclick=renderRest;
+$("tabList").onclick=openList;
+$("search").oninput=e=>renderList(e.target.value);
+$("resetBtn").onclick=()=>{if(confirm("Reset all progress?")){state=blank();save();renderRest();}};
+$("backupBtn").onclick=backup;
+document.addEventListener("keydown",e=>{
+  if($("sessionView").classList.contains("hidden"))return;
+  if(e.key===" "||e.key==="Enter"){e.preventDefault();if(flipped)return;flip();}
+  if(flipped&&(e.key==="1"||e.key.toLowerCase()==="a"))answer(false);
+  if(flipped&&(e.key==="2"||e.key.toLowerCase()==="g"))answer(true);
+});
+
+load();
+renderRest();
+</script>
+</body>
+</html>
