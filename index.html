@@ -88,6 +88,25 @@
   .legend{display:flex;gap:14px;justify-content:center;margin-top:12px;font-size:11px;color:rgba(28,43,58,.5)}
   .legend span{display:flex;align-items:center;gap:5px}
   .empty{text-align:center;color:rgba(28,43,58,.45);font-size:14px;padding:30px 0}
+  /* review button */
+  .review{width:100%;margin-top:10px;padding:13px;background:var(--cream);color:var(--navy);
+    border:1px solid var(--line);border-radius:12px;font-size:14.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .review:disabled{opacity:.4;cursor:default}
+  /* test view */
+  .testView{animation:rise .35s ease}
+  .testIntro{text-align:center}
+  .qcount{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(28,43,58,.5);font-weight:600;margin-bottom:12px}
+  .qdef{background:var(--navy);color:var(--cream);border-radius:16px;padding:26px 22px;font-size:17px;line-height:1.5;
+    text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt{padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--cream-soft);color:var(--navy);
+    font-size:16px;font-weight:600;font-family:var(--serif);cursor:pointer;text-align:left}
+  .opt:disabled{cursor:default}
+  .opt.correct{background:#e6efe7;border-color:#4f8a5b;color:#2f6138}
+  .opt.wrong{background:#f3e3e0;border-color:#c0654f;color:#8f3c2c}
+  .nextBtn{width:100%;margin-top:14px;padding:14px;background:var(--navy);color:var(--cream);border:none;
+    border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .score{font-family:var(--serif);font-size:44px;font-weight:600;text-align:center;margin:8px 0 2px;color:var(--navy)}
 </style>
 </head>
 <body>
@@ -107,6 +126,7 @@
 
   <div class="tabs" id="tabs">
     <button class="tab on" id="tabStudy">Study</button>
+    <button class="tab" id="tabTest">Test</button>
     <button class="tab" id="tabList">All words</button>
   </div>
 
@@ -118,6 +138,7 @@
       <div class="tile"><div class="tnum" id="tNew">0</div><div class="tlabel">new words</div></div>
     </div>
     <button class="primary" id="startBtn">Start</button>
+    <button class="review" id="reviewBtn">Review today's words</button>
     <div class="donenote hidden" id="doneNote">All caught up. Come back tomorrow for your reviews.</div>
   </div>
 
@@ -146,6 +167,9 @@
       <span><i class="dot learned"></i>learned</span>
     </div>
   </div>
+
+  <!-- TEST VIEW -->
+  <div class="testView hidden" id="testView"><div id="testBody"></div></div>
 
   <footer>
     <button class="reset" id="resetBtn">Reset progress</button>
@@ -410,14 +434,14 @@ const KEY="ielts-vocab-progress-v1";
 const DEFAULT_NEW=10;
 
 function todayStamp(){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime();}
-function blank(){return{cards:{},lastDate:todayStamp(),introducedToday:0,dailyNew:DEFAULT_NEW};}
+function blank(){return{cards:{},lastDate:todayStamp(),introducedToday:0,studiedToday:[]};}
 
 let state=blank();
 function load(){
   try{
     const raw=localStorage.getItem(KEY);
     if(raw){const s=JSON.parse(raw);
-      if(s.lastDate!==todayStamp()){s.introducedToday=0;s.lastDate=todayStamp();}
+      if(s.lastDate!==todayStamp()){s.introducedToday=0;s.studiedToday=[];s.lastDate=todayStamp();}
       state=Object.assign(blank(),s);
     }
   }catch(e){/* private mode etc — stays in memory */}
@@ -437,6 +461,7 @@ function newLeft(){return DECK.length-countStarted();}   // all unseen words, no
 function renderRest(){
   $("sessionView").classList.add("hidden");
   $("listView").classList.add("hidden");
+  $("testView").classList.add("hidden");
   $("restView").classList.remove("hidden");
   setTab("study");
   const due=countDue(),nl=newLeft();
@@ -447,6 +472,10 @@ function renderRest(){
   $("startBtn").classList.toggle("hidden",!has);
   $("doneNote").classList.toggle("hidden",has);
   if(has)$("startBtn").textContent="Start — "+(due+nl)+" cards";
+  const st=(state.studiedToday||[]).length;
+  const rb=$("reviewBtn");
+  rb.textContent=st?("Review today's words ("+st+")"):"Review today's words";
+  rb.disabled=st===0;
   renderTop();
 }
 function renderTop(){
@@ -466,6 +495,7 @@ function buildSession(){
   if(queue.length===0){renderRest();return;}
   $("restView").classList.add("hidden");
   $("listView").classList.add("hidden");
+  $("testView").classList.add("hidden");
   $("sessionView").classList.remove("hidden");
   renderCard();
 }
@@ -501,6 +531,8 @@ function answer(known){
     state.cards[word]={box:1,due:todayStamp()};
   }
   if(wasNew)state.introducedToday=(state.introducedToday||0)+1;
+  if(!state.studiedToday)state.studiedToday=[];
+  if(!state.studiedToday.includes(word))state.studiedToday.push(word);
   state.lastDate=todayStamp();
   save();
   doneCount++;
@@ -524,6 +556,7 @@ function finishSession(){
 /* ── tabs + glossary list ── */
 function setTab(which){
   $("tabStudy").classList.toggle("on",which==="study");
+  $("tabTest").classList.toggle("on",which==="test");
   $("tabList").classList.toggle("on",which==="list");
 }
 function statusOf(word){
@@ -555,9 +588,98 @@ function renderList(filter){
 function openList(){
   $("restView").classList.add("hidden");
   $("sessionView").classList.add("hidden");
+  $("testView").classList.add("hidden");
   $("listView").classList.remove("hidden");
   setTab("list");
   renderList($("search").value);
+}
+
+/* ── review today's words only (resets daily) ── */
+function buildReview(){
+  const words=(state.studiedToday||[]).slice();
+  if(words.length===0)return;
+  queue=words;
+  for(let i=queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[queue[i],queue[j]]=[queue[j],queue[i]];}
+  idx=0;doneCount=0;flipped=false;
+  $("restView").classList.add("hidden");
+  $("listView").classList.add("hidden");
+  $("testView").classList.add("hidden");
+  $("sessionView").classList.remove("hidden");
+  renderCard();
+}
+
+/* ── test: pick the right word for a meaning ── */
+let tQ=[],tqi=0,tScore=0;
+function escapeHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function openTest(){
+  $("restView").classList.add("hidden");
+  $("sessionView").classList.add("hidden");
+  $("listView").classList.add("hidden");
+  $("testView").classList.remove("hidden");
+  setTab("test");
+  renderTestIntro();
+}
+function testPoolSize(){const s=Object.keys(state.cards).length;return s>=4?s:DECK.length;}
+function renderTestIntro(){
+  const n=Math.min(10,testPoolSize());
+  $("testBody").innerHTML='<div class="testIntro"><p class="lead">Read the meaning, pick the right word.</p>'
+    +'<button class="primary" id="startTestBtn">Start test — '+n+' questions</button></div>';
+  $("startTestBtn").onclick=()=>startTest(n);
+}
+function startTest(n){
+  const started=Object.keys(state.cards).map(w=>DECK.find(c=>c.w===w)).filter(Boolean);
+  let pool=(started.length>=4?started:DECK).slice();
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  const picks=pool.slice(0,n);
+  tQ=picks.map(correct=>{
+    const opts=[correct.w];
+    let guard=0;
+    while(opts.length<4&&guard++<200){
+      const r=DECK[Math.floor(Math.random()*DECK.length)].w;
+      if(!opts.includes(r))opts.push(r);
+    }
+    for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+    return{def:correct.d,answer:correct.w,opts:opts};
+  });
+  tqi=0;tScore=0;renderTestQ();
+}
+function renderTestQ(){
+  const q=tQ[tqi];
+  let html='<div class="qcount">Question '+(tqi+1)+' of '+tQ.length+'</div>';
+  html+='<div class="qdef">'+escapeHtml(q.def)+'</div><div class="opts">';
+  q.opts.forEach(o=>{html+='<button class="opt" data-w="'+encodeURIComponent(o)+'">'+escapeHtml(o)+'</button>';});
+  html+='</div>';
+  $("testBody").innerHTML=html;
+  document.querySelectorAll("#testBody .opt").forEach(b=>{
+    b.onclick=()=>pickAnswer(b,decodeURIComponent(b.dataset.w),q.answer);
+  });
+}
+function pickAnswer(btn,chosen,answer){
+  document.querySelectorAll("#testBody .opt").forEach(b=>{
+    b.disabled=true;
+    const w=decodeURIComponent(b.dataset.w);
+    if(w===answer)b.classList.add("correct");
+    else if(b===btn)b.classList.add("wrong");
+  });
+  if(chosen===answer)tScore++;
+  const nb=document.createElement("button");
+  nb.className="nextBtn";
+  nb.textContent=(tqi+1<tQ.length)?"Next":"See result";
+  nb.onclick=()=>{tqi++;if(tqi<tQ.length)renderTestQ();else renderTestResult();};
+  $("testBody").appendChild(nb);
+}
+function resultMsg(r){
+  if(r>=0.9)return"Excellent.";
+  if(r>=0.7)return"Solid work.";
+  if(r>=0.5)return"Getting there.";
+  return"Keep going — review and try again.";
+}
+function renderTestResult(){
+  const r=tScore/tQ.length;
+  $("testBody").innerHTML='<div class="testIntro"><div class="score">'+tScore+'/'+tQ.length+'</div>'
+    +'<p class="lead">'+resultMsg(r)+'</p>'
+    +'<button class="primary" id="retryTest">Try again</button></div>';
+  $("retryTest").onclick=renderTestIntro;
 }
 
 /* ── backup / restore ── */
@@ -577,7 +699,9 @@ $("againBtn").onclick=()=>answer(false);
 $("gotBtn").onclick=()=>answer(true);
 $("exitBtn").onclick=renderRest;
 $("tabStudy").onclick=renderRest;
+$("tabTest").onclick=openTest;
 $("tabList").onclick=openList;
+$("reviewBtn").onclick=buildReview;
 $("search").oninput=e=>renderList(e.target.value);
 $("resetBtn").onclick=()=>{if(confirm("Reset all progress?")){state=blank();save();renderRest();}};
 $("backupBtn").onclick=backup;
