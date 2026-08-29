@@ -788,6 +788,7 @@ function renderDictHome(){
   if(dictState.list.length===0){
     html+='<div class="empty">No dictation words yet. Add one above to start drilling.</div>';
   }else{
+    html+='<button class="review" id="dictPracticeAllBtn">Practice all ('+dictState.list.length+' words) back to back</button>';
     html+='<div class="list" id="dictList">';
     dictState.list.forEach((item,i)=>{
       const stats=item.reps?(Math.round(100*item.correct/item.reps)+"% correct so far"):"not practiced yet";
@@ -804,6 +805,8 @@ function renderDictHome(){
   $("dictBody").innerHTML=html;
   $("dictAddBtn").onclick=addDictWordFromInput;
   $("dictInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addDictWordFromInput();}});
+  const paBtn=$("dictPracticeAllBtn");
+  if(paBtn)paBtn.onclick=startDictPracticeAll;
   document.querySelectorAll("#dictList .miniBtn").forEach(b=>{
     b.onclick=()=>{
       const i=parseInt(b.dataset.i,10);
@@ -832,10 +835,17 @@ function removeDictWordAt(i){
   renderDictHome();
 }
 
-function startDictPractice(i){
+function startDictPractice(i,chain){
   const item=dictState.list[i];
-  dPractice={i:i,word:item.w,fa:item.fa,round:1,correctCount:0,results:[],busy:false};
+  dPractice={i:i,word:item.w,fa:item.fa,round:1,correctCount:0,results:[],busy:false,chain:chain||null};
   renderDictRound();
+}
+
+function startDictPracticeAll(){
+  if(dictState.list.length===0)return;
+  const order=dictState.list.map((_,i)=>i);
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+  startDictPractice(order[0],{order:order,pos:0,totalCorrect:0});
 }
 
 function renderDictRound(){
@@ -847,7 +857,8 @@ function renderDictRound(){
     else if(p.results[r-1]===false)cls+=" done-wrong";
     dots+='<span class="'+cls+'"></span>';
   }
-  let html='<div class="stop"><span class="counter">Round '+p.round+' of 10</span><button class="exit" id="dictExitBtn">Done for now</button></div>';
+  const label=p.chain?("Word "+(p.chain.pos+1)+" of "+p.chain.order.length+" · Round "+p.round+" of 10"):("Round "+p.round+" of 10");
+  let html='<div class="stop"><span class="counter">'+label+'</span><button class="exit" id="dictExitBtn">Done for now</button></div>';
   html+='<div class="dictPracticeCard"><div class="dictRoundLabel">type this word</div>'
       +'<div class="dictWordBig">'+escapeHtml(p.word)+'</div>'
       +(p.fa?'<div class="dictFa">'+escapeHtml(p.fa)+'</div>':'')
@@ -899,6 +910,30 @@ function submitDictType(){
 function renderDictResult(){
   const p=dPractice;
   const score=p.correctCount;
+  if(p.chain){
+    const newTotal=p.chain.totalCorrect+score;
+    const nextPos=p.chain.pos+1;
+    const isLast=nextPos>=p.chain.order.length;
+    let html='<div class="testIntro"><div class="dictRoundLabel">'+escapeHtml(p.word)+'</div>'
+      +'<div class="score">'+score+'/10</div>'
+      +'<p class="lead">'+resultMsg(score/10)+'</p>';
+    if(isLast){
+      html+='<div class="dictStats" style="margin-bottom:14px">All done — '+newTotal+'/'+(p.chain.order.length*10)+' correct overall</div>'
+        +'<button class="primary" id="dictChainNextBtn">Practice all again</button>'
+        +'<button class="review" id="dictHomeBtn">Back to word list</button></div>';
+    }else{
+      html+='<div class="dictStats" style="margin-bottom:14px">Word '+nextPos+' of '+p.chain.order.length+' up next</div>'
+        +'<button class="primary" id="dictChainNextBtn">Next word</button>'
+        +'<button class="review" id="dictHomeBtn">Stop here</button></div>';
+    }
+    $("dictBody").innerHTML=html;
+    $("dictChainNextBtn").onclick=()=>{
+      if(isLast)startDictPracticeAll();
+      else startDictPractice(p.chain.order[nextPos],{order:p.chain.order,pos:nextPos,totalCorrect:newTotal});
+    };
+    $("dictHomeBtn").onclick=renderDictHome;
+    return;
+  }
   $("dictBody").innerHTML='<div class="testIntro"><div class="score">'+score+'/10</div>'
     +'<p class="lead">'+resultMsg(score/10)+'</p>'
     +'<button class="primary" id="dictAgainBtn">Practice again</button>'
