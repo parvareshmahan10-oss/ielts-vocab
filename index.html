@@ -110,6 +110,40 @@
   .nextBtn{width:100%;margin-top:14px;padding:14px;background:var(--navy);color:var(--cream);border:none;
     border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans)}
   .score{font-family:var(--serif);font-size:44px;font-weight:600;text-align:center;margin:8px 0 2px;color:var(--navy)}
+  /* dictation */
+  .dictView{animation:rise .35s ease}
+  .dictAdd{display:flex;gap:8px;margin-bottom:16px}
+  .dictAdd input{flex:1}
+  .dictRow{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid var(--line)}
+  .dictStats{font-size:11.5px;color:rgba(28,43,58,.45);margin-top:3px}
+  .dictBtns{display:flex;gap:6px;flex-shrink:0}
+  .miniBtn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--cream-soft);
+    color:var(--navy);font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .miniBtn.danger{color:#b0503c}
+  .dictPracticeCard{background:var(--navy);color:var(--cream);border-radius:16px;padding:32px 24px;
+    text-align:center;margin-bottom:16px}
+  .dictRoundLabel{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,239,230,.5);margin-bottom:10px}
+  .dictWordBig{font-family:var(--serif);font-size:32px;font-weight:600;letter-spacing:-.01em}
+  .dictFa{margin-top:10px;color:var(--clay);font-weight:700;direction:rtl;font-size:16px}
+  .dictTypeInput{width:100%;padding:15px 16px;border-radius:12px;border:2px solid var(--line);
+    font-size:19px;font-family:var(--serif);text-align:center;outline:none;background:var(--cream-soft);color:var(--navy)}
+  .dictTypeInput:focus{border-color:var(--clay)}
+  .dictTypeInput.wrongShake{animation:shakeX .5s;border-color:#c0654f}
+  .dictTypeInput.rightFlash{border-color:#4f8a5b}
+  .dictFeedback{margin-top:14px;min-height:52px;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:3px;opacity:0;transform:scale(.6)}
+  .dictFeedback.show{animation:popIn .45s ease forwards}
+  .dictFeedback .ico{font-size:32px;line-height:1}
+  .dictFeedback.correct .ico,.dictFeedback.correct .msg{color:#4f8a5b}
+  .dictFeedback.wrong .ico,.dictFeedback.wrong .msg{color:#c0654f}
+  .dictFeedback .msg{font-size:13.5px;font-weight:600}
+  .dictProgress{display:flex;gap:6px;justify-content:center;margin-top:16px}
+  .dictDot{width:9px;height:9px;border-radius:50%;background:rgba(28,43,58,.15)}
+  .dictDot.done-correct{background:#4f8a5b}
+  .dictDot.done-wrong{background:#c0654f}
+  @keyframes popIn{0%{transform:scale(.4);opacity:0}55%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+  @keyframes shakeX{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}
+    30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
 </style>
 </head>
 <body>
@@ -131,6 +165,7 @@
     <button class="tab on" id="tabStudy">Study</button>
     <button class="tab" id="tabTest">Test</button>
     <button class="tab" id="tabList">All words</button>
+    <button class="tab" id="tabDict">Dictation</button>
   </div>
 
   <!-- REST VIEW -->
@@ -174,6 +209,9 @@
 
   <!-- TEST VIEW -->
   <div class="testView hidden" id="testView"><div id="testBody"></div></div>
+
+  <!-- DICTATION VIEW -->
+  <div class="dictView hidden" id="dictView"><div id="dictBody"></div></div>
 
   <footer>
     <button class="reset" id="resetBtn">Reset progress</button>
@@ -466,6 +504,7 @@ function renderRest(){
   $("sessionView").classList.add("hidden");
   $("listView").classList.add("hidden");
   $("testView").classList.add("hidden");
+  $("dictView").classList.add("hidden");
   $("restView").classList.remove("hidden");
   setTab("study");
   const due=countDue(),nl=newLeft();
@@ -505,6 +544,7 @@ function buildSession(){
   $("restView").classList.add("hidden");
   $("listView").classList.add("hidden");
   $("testView").classList.add("hidden");
+  $("dictView").classList.add("hidden");
   $("sessionView").classList.remove("hidden");
   renderCard();
 }
@@ -568,6 +608,7 @@ function setTab(which){
   $("tabStudy").classList.toggle("on",which==="study");
   $("tabTest").classList.toggle("on",which==="test");
   $("tabList").classList.toggle("on",which==="list");
+  $("tabDict").classList.toggle("on",which==="dict");
 }
 function statusOf(word){
   const p=state.cards[word];
@@ -600,6 +641,7 @@ function openList(){
   $("restView").classList.add("hidden");
   $("sessionView").classList.add("hidden");
   $("testView").classList.add("hidden");
+  $("dictView").classList.add("hidden");
   $("listView").classList.remove("hidden");
   setTab("list");
   renderList($("search").value);
@@ -615,6 +657,7 @@ function buildReview(){
   $("restView").classList.add("hidden");
   $("listView").classList.add("hidden");
   $("testView").classList.add("hidden");
+  $("dictView").classList.add("hidden");
   $("sessionView").classList.remove("hidden");
   renderCard();
 }
@@ -629,6 +672,7 @@ function buildReviewAll(){
   $("restView").classList.add("hidden");
   $("listView").classList.add("hidden");
   $("testView").classList.add("hidden");
+  $("dictView").classList.add("hidden");
   $("sessionView").classList.remove("hidden");
   renderCard();
 }
@@ -640,6 +684,7 @@ function openTest(){
   $("restView").classList.add("hidden");
   $("sessionView").classList.add("hidden");
   $("listView").classList.add("hidden");
+  $("dictView").classList.add("hidden");
   $("testView").classList.remove("hidden");
   setTab("test");
   renderTestIntro();
@@ -707,6 +752,161 @@ function renderTestResult(){
   $("retryTest").onclick=renderTestIntro;
 }
 
+/* ── dictation: drill words you keep mistyping ── */
+const DICT_KEY="ielts-vocab-dictation-v1";
+let dictState={list:[]};
+function loadDict(){
+  try{
+    const raw=localStorage.getItem(DICT_KEY);
+    if(raw){const s=JSON.parse(raw);if(s&&Array.isArray(s.list))dictState=s;}
+  }catch(e){}
+}
+function saveDict(){try{localStorage.setItem(DICT_KEY,JSON.stringify(dictState));}catch(e){}}
+function findDeckMeta(word){
+  const w=word.trim().toLowerCase();
+  const hit=DECK.find(c=>c.w.toLowerCase()===w);
+  return hit?{fa:hit.fa||""}:null;
+}
+
+let dPractice=null;
+
+function openDict(){
+  $("restView").classList.add("hidden");
+  $("sessionView").classList.add("hidden");
+  $("listView").classList.add("hidden");
+  $("testView").classList.add("hidden");
+  $("dictView").classList.remove("hidden");
+  setTab("dict");
+  renderDictHome();
+}
+
+function renderDictHome(){
+  dPractice=null;
+  let html='<p class="lead" style="margin-top:0">Add words you keep mistyping, then drill them.</p>';
+  html+='<div class="dictAdd"><input class="search" id="dictInput" type="text" placeholder="Type a word to practice…" autocomplete="off" style="margin-bottom:0">'
+      +'<button class="primary" style="width:auto;padding:11px 18px" id="dictAddBtn">Add</button></div>';
+  if(dictState.list.length===0){
+    html+='<div class="empty">No dictation words yet. Add one above to start drilling.</div>';
+  }else{
+    html+='<div class="list" id="dictList">';
+    dictState.list.forEach((item,i)=>{
+      const stats=item.reps?(Math.round(100*item.correct/item.reps)+"% correct so far"):"not practiced yet";
+      html+='<div class="dictRow">'
+        +'<div class="itxt"><div class="iword">'+escapeHtml(item.w)+'</div>'
+        +(item.fa?'<div class="ifa">'+escapeHtml(item.fa)+'</div>':'')
+        +'<div class="dictStats">'+stats+'</div></div>'
+        +'<div class="dictBtns"><button class="miniBtn" data-act="practice" data-i="'+i+'">Practice</button>'
+        +'<button class="miniBtn danger" data-act="remove" data-i="'+i+'">Remove</button></div>'
+        +'</div>';
+    });
+    html+='</div>';
+  }
+  $("dictBody").innerHTML=html;
+  $("dictAddBtn").onclick=addDictWordFromInput;
+  $("dictInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addDictWordFromInput();}});
+  document.querySelectorAll("#dictList .miniBtn").forEach(b=>{
+    b.onclick=()=>{
+      const i=parseInt(b.dataset.i,10);
+      if(b.dataset.act==="practice")startDictPractice(i);
+      else removeDictWordAt(i);
+    };
+  });
+}
+
+function addDictWordFromInput(){
+  const inp=$("dictInput");
+  const w=(inp.value||"").trim();
+  if(!w)return;
+  const exists=dictState.list.some(x=>x.w.toLowerCase()===w.toLowerCase());
+  if(!exists){
+    const meta=findDeckMeta(w);
+    dictState.list.unshift({w:w,fa:meta?meta.fa:"",reps:0,correct:0});
+    saveDict();
+  }
+  renderDictHome();
+}
+
+function removeDictWordAt(i){
+  dictState.list.splice(i,1);
+  saveDict();
+  renderDictHome();
+}
+
+function startDictPractice(i){
+  const item=dictState.list[i];
+  dPractice={i:i,word:item.w,fa:item.fa,round:1,correctCount:0,results:[],busy:false};
+  renderDictRound();
+}
+
+function renderDictRound(){
+  const p=dPractice;
+  let dots="";
+  for(let r=1;r<=10;r++){
+    let cls="dictDot";
+    if(p.results[r-1]===true)cls+=" done-correct";
+    else if(p.results[r-1]===false)cls+=" done-wrong";
+    dots+='<span class="'+cls+'"></span>';
+  }
+  let html='<div class="stop"><span class="counter">Round '+p.round+' of 10</span><button class="exit" id="dictExitBtn">Done for now</button></div>';
+  html+='<div class="dictPracticeCard"><div class="dictRoundLabel">type this word</div>'
+      +'<div class="dictWordBig">'+escapeHtml(p.word)+'</div>'
+      +(p.fa?'<div class="dictFa">'+escapeHtml(p.fa)+'</div>':'')
+      +'</div>';
+  html+='<input class="dictTypeInput" id="dictTypeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type it here…">';
+  html+='<div class="dictFeedback" id="dictFeedback"></div>';
+  html+='<div class="dictProgress">'+dots+'</div>';
+  $("dictBody").innerHTML=html;
+  $("dictExitBtn").onclick=renderDictHome;
+  const inputEl=$("dictTypeInput");
+  inputEl.focus();
+  inputEl.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();submitDictType();}});
+}
+
+function submitDictType(){
+  const p=dPractice;
+  if(!p||p.busy)return;
+  const inputEl=$("dictTypeInput");
+  const val=(inputEl.value||"").trim();
+  if(!val)return;
+  const ok=val.toLowerCase()===p.word.toLowerCase();
+  p.busy=true;
+  p.results[p.round-1]=ok;
+  const item=dictState.list[p.i];
+  if(item){
+    item.reps=(item.reps||0)+1;
+    if(ok)item.correct=(item.correct||0)+1;
+  }
+  if(ok)p.correctCount++;
+  saveDict();
+  inputEl.disabled=true;
+  const fb=$("dictFeedback");
+  if(ok){
+    inputEl.classList.add("rightFlash");
+    fb.className="dictFeedback show correct";
+    fb.innerHTML='<div class="ico">✓</div><div class="msg">Correct!</div>';
+  }else{
+    inputEl.classList.add("wrongShake");
+    fb.className="dictFeedback show wrong";
+    fb.innerHTML='<div class="ico">✕</div><div class="msg">Not quite — it\'s "'+escapeHtml(p.word)+'"</div>';
+  }
+  setTimeout(()=>{
+    p.busy=false;
+    p.round++;
+    if(p.round>10)renderDictResult();else renderDictRound();
+  },ok?800:1500);
+}
+
+function renderDictResult(){
+  const p=dPractice;
+  const score=p.correctCount;
+  $("dictBody").innerHTML='<div class="testIntro"><div class="score">'+score+'/10</div>'
+    +'<p class="lead">'+resultMsg(score/10)+'</p>'
+    +'<button class="primary" id="dictAgainBtn">Practice again</button>'
+    +'<button class="review" id="dictHomeBtn">Back to word list</button></div>';
+  $("dictAgainBtn").onclick=()=>startDictPractice(p.i);
+  $("dictHomeBtn").onclick=renderDictHome;
+}
+
 /* ── backup / restore ── */
 function backup(){
   const blob=new Blob([JSON.stringify(state)],{type:"application/json"});
@@ -726,6 +926,7 @@ $("exitBtn").onclick=renderRest;
 $("tabStudy").onclick=renderRest;
 $("tabTest").onclick=openTest;
 $("tabList").onclick=openList;
+$("tabDict").onclick=openDict;
 $("reviewBtn").onclick=buildReview;
 $("reviewAllBtn").onclick=buildReviewAll;
 $("search").oninput=e=>renderList(e.target.value);
@@ -739,6 +940,7 @@ document.addEventListener("keydown",e=>{
 });
 
 load();
+loadDict();
 renderRest();
 </script>
 </body>
