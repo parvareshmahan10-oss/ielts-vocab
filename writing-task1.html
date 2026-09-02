@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Studio · IELTS Task 1</title>
+<style>
+  :root{
+    --navy:#1c2b3a; --navy-rgb:28,43,58; --navy-deep:#141f2b; --cream:#f3efe6; --cream-soft:#faf7f0;
+    --clay:#c98a5e; --line:rgba(var(--navy-rgb),0.12); --green:#4f8a5b; --red:#c0654f;
+    --sans:'Segoe UI', system-ui, -apple-system, sans-serif;
+    --serif:Georgia,'Times New Roman',serif;
+    color-scheme:light dark;
+  }
+  @media(prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --navy:#eef1f2; --navy-rgb:238,241,242; --cream:#11161d; --cream-soft:#1a222b;
+      --clay:#e2a172; --green:#6fbb7d; --red:#e08a72;
+    }
+  }
+  :root[data-theme="dark"]{
+    --navy:#eef1f2; --navy-rgb:238,241,242; --cream:#11161d; --cream-soft:#1a222b;
+    --clay:#e2a172; --green:#6fbb7d; --red:#e08a72;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--cream);font-family:var(--sans);color:var(--navy);
+       display:flex;justify-content:center;padding:24px 14px 60px;min-height:100vh}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .frame{width:100%;max-width:920px}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--clay);font-weight:700}
+  h1{font-family:var(--serif);font-size:30px;margin:4px 0 0;font-weight:600;letter-spacing:-.01em}
+  .timerwrap{text-align:right;background:var(--cream-soft);border:1px solid var(--line);border-radius:14px;padding:10px 16px;min-width:150px}
+  .timerNum{font-family:var(--serif);font-size:26px;font-weight:600;line-height:1}
+  .timerLabel{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(var(--navy-rgb),.5);margin-top:2px}
+  .timerBtns{display:flex;gap:6px;margin-top:8px;justify-content:flex-end}
+  .tmini{padding:5px 10px;border-radius:7px;border:1px solid var(--line);background:var(--cream);
+    color:var(--navy);font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+
+  .card{background:var(--cream-soft);border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 18px 50px -32px rgba(20,31,43,.5);padding:20px 20px 18px;margin-bottom:16px}
+  .cardtitle{font-family:var(--serif);font-size:15.5px;font-weight:600;margin:0 0 12px;
+    display:flex;align-items:center;gap:8px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:8px 15px;border-radius:9px;border:1px solid var(--line);background:var(--cream);
+    color:var(--navy);cursor:pointer;font-size:13.5px;font-weight:600;font-family:var(--sans)}
+  .chip.on{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+  .chip.small{padding:6px 12px;font-size:12.5px;font-weight:500}
+
+  .reminders{margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;color:rgba(var(--navy-rgb),.8)}
+  .reminders li{margin-bottom:2px}
+  .reminders b{color:var(--clay)}
+
+  details.struct summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--navy);list-style:none;
+    display:flex;align-items:center;gap:6px}
+  details.struct summary::before{content:"▸";font-size:11px;color:var(--clay);transition:transform .15s}
+  details.struct[open] summary::before{transform:rotate(90deg)}
+  details.struct .structbody{font-size:13.5px;line-height:1.7;padding:10px 2px 2px;color:rgba(var(--navy-rgb),.85)}
+  details.struct .structbody b{color:var(--navy)}
+
+  .tabs{display:flex;gap:6px;background:rgba(var(--navy-rgb),.06);border-radius:11px;padding:4px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{flex:1;min-width:90px;padding:8px 6px;border:none;background:none;border-radius:8px;font-size:12.5px;font-weight:600;
+    color:rgba(var(--navy-rgb),.55);cursor:pointer;font-family:var(--sans)}
+  .tab.on{background:var(--cream-soft);color:var(--navy);box-shadow:0 1px 3px rgba(20,31,43,.12)}
+
+  .phrasebox{max-height:250px;overflow-y:auto;padding-right:2px}
+  .phrasegroup{margin-bottom:14px}
+  .phrasegroup h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(var(--navy-rgb),.5);
+    margin:0 0 7px;font-weight:700}
+  .phrase{display:block;width:100%;text-align:left;padding:9px 12px;margin-bottom:6px;border-radius:10px;
+    border:1px solid var(--line);background:var(--cream);color:var(--navy);font-family:var(--serif);
+    font-size:14px;cursor:pointer;line-height:1.35}
+  .phrase:hover{border-color:var(--clay);background:var(--cream-soft)}
+  .phrase:active{transform:scale(.99)}
+  .hint{font-size:11.5px;color:rgba(var(--navy-rgb),.45);margin:-4px 0 12px}
+
+  textarea#pad{width:100%;min-height:340px;padding:18px 20px;border-radius:14px;border:1px solid var(--line);
+    background:var(--cream-soft);color:var(--navy);font-family:var(--serif);font-size:16.5px;line-height:1.65;
+    outline:none;resize:vertical}
+  textarea#pad:focus{border-color:var(--clay)}
+  .padfoot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px}
+  .wc{font-size:12.5px;color:rgba(var(--navy-rgb),.55);font-weight:600}
+  .wc.ok{color:var(--green)}
+  .padbtns{display:flex;gap:8px}
+  .miniBtn{padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:var(--cream);
+    color:var(--navy);font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .miniBtn.danger{color:var(--red)}
+
+  .checklist{display:flex;flex-direction:column;gap:9px}
+  .citem{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;line-height:1.5;cursor:pointer}
+  .citem input{margin-top:3px;flex-shrink:0}
+  .citem.checked span{text-decoration:line-through;color:rgba(var(--navy-rgb),.4)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+
+  .soon{text-align:center;padding:30px 10px;color:rgba(var(--navy-rgb),.55);font-size:14px}
+  .soon b{color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="frame">
+  <header>
+    <div>
+      <div class="kicker">Writing Studio · IELTS</div>
+      <h1>Task 1 Workspace</h1>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <button class="tmini" id="themeToggle" style="font-weight:700">🌙 Dark</button>
+      <div class="timerwrap">
+        <div class="timerNum" id="timerNum">20:00</div>
+        <div class="timerLabel">time left</div>
+        <div class="timerBtns">
+          <button class="tmini" id="timerStart">Start</button>
+          <button class="tmini" id="timerReset">Reset</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="cardtitle">Task</div>
+    <div class="chips" id="taskChips">
+      <button class="chip on" data-task="1">Task 1</button>
+      <button class="chip" data-task="2">Task 2</button>
+    </div>
+    <div id="typeRow" style="margin-top:12px">
+      <div class="chips" id="typeChips"></div>
+    </div>
+  </div>
+
+  <div id="task2Soon" class="card soon" style="display:none">
+    Task 2 tools are coming soon. <br>The <b>linkers</b> panel below already works for essays — switch to the "Linkers" tab and start drafting.
+  </div>
+
+  <div id="mainArea">
+    <div class="card" id="remindersCard">
+      <div class="cardtitle" id="remindersTitle">Quick reminders</div>
+      <ul class="reminders" id="remindersList"></ul>
+      <details class="struct" style="margin-top:12px">
+        <summary>Paragraph structure for this type</summary>
+        <div class="structbody" id="structBody"></div>
+      </details>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="cardtitle">Phrase bank <span style="font-weight:400;color:rgba(var(--navy-rgb),.5);font-size:12px">— click to insert</span></div>
+        <div class="tabs" id="phraseTabs"></div>
+        <div class="phrasebox" id="phraseBox"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardtitle">Your writing</div>
+        <textarea id="pad" spellcheck="true" lang="en" placeholder="Start writing here… misspelled words will get a red underline from your browser's own spell-checker."></textarea>
+        <div class="padfoot">
+          <span class="wc" id="wc">0 words</span>
+          <div class="padbtns">
+            <button class="miniBtn" id="copyBtn">Copy text</button>
+            <button class="miniBtn danger" id="clearBtn">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardtitle">Self-editing checklist</div>
+      <div class="checklist" id="checklist"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+/* ───────── reference content ───────── */
+const LINKERS = {
+  "Addition":["In addition to this,","Furthermore,","Additionally,","Not only… but also…"],
+  "Contrast":["By contrast,","Whereas…","Nevertheless,","Conversely,","In contrast to this,"],
+  "Cause & effect":["As a result,","Consequently,","This, in turn, led to…","Owing to this,"],
+  "Sequence / time":["Subsequently,","Following this,","Prior to this,","Once this had occurred,"],
+  "Emphasis":["Notably,","It is worth noting that…","Significantly,"],
+  "Example":["For instance,","To illustrate this point,"],
+  "Summary":["Overall,","In summary,","To conclude,"]
+};
+
+const TYPES = {
+  line:{label:"Line / Bar",
+    reminders:["Always identify the <b>maximum</b> and <b>minimum</b> values.",
+      "Use <b>past tense</b> throughout — the data covers a completed period.",
+      "Common mistake: describing every single data point instead of the key trends."],
+    structure:"<b>Intro</b> — paraphrase the question.<br><b>Overview</b> — 2–3 sentences on the biggest overall trends, no numbers.<br><b>Body 1 / Body 2</b> — group the data logically (by category, or by rising vs falling) and give supporting figures.",
+    openings:["The chart illustrates the changes in… over the period from… to…","The graph shows/depicts…","The given [bar chart/line graph] compares…"],
+    overview:["Overall, it is clear that…","Overall, the general trend for… was upward, whereas…","In general, the most noticeable feature was…"],
+    data:{
+      "Trend verbs":["rose","increased","climbed","surged","fell","declined","dropped","plummeted","fluctuated","remained stable/steady"],
+      "Adverbs":["sharply","dramatically","gradually","steadily","slightly","marginally"],
+      "Max / min":["…reached a peak of…","…peaked at…","…hit its lowest point at…","the figure for… stood at…"],
+      "Comparison":["…compared to…","…, whereas…","…was considerably higher than…","…, similarly,…"]
+    }},
+  pie:{label:"Pie chart",
+    reminders:["Percentages in a single pie chart should add up to 100%.",
+      "Use <b>proportion language</b> (accounted for, made up) — not just bare numbers.",
+      "With two or more pie charts, compare <i>across</i> them, don't describe each in isolation."],
+    structure:"<b>Intro</b> — paraphrase the question.<br><b>Overview</b> — the largest and smallest categories overall, and any big shift between charts.<br><b>Body 1 / Body 2</b> — group similar-sized slices together and compare between charts.",
+    openings:["The pie charts compare…","The pie charts illustrate the proportion of… in…"],
+    overview:["Overall, … accounted for the largest share in both years, while…"],
+    data:{
+      "Proportion":["accounted for","made up","represented","constituted","comprised"],
+      "Fractions/approx.":["just under","just over","roughly a third of","nearly half of","a negligible proportion of"],
+      "Comparison":["the majority of","the minority of","…was more than double…","…was almost identical to…"]
+    }},
+  table:{label:"Table",
+    reminders:["There's <b>no visual trend line</b> — you must find the pattern in the numbers yourself.",
+      "Group similar figures together rather than listing every cell.",
+      "It still needs an Overview, even though it's 'just numbers'."],
+    structure:"<b>Intro</b> — paraphrase the question.<br><b>Overview</b> — the standout pattern(s) you found (highest/lowest category, biggest gap).<br><b>Body 1 / Body 2</b> — group rows/columns that behave similarly.",
+    openings:["The table shows/illustrates data on… in… (year(s))…","The table compares…"],
+    overview:["Overall, the highest figures were recorded for…, while… consistently had the lowest."],
+    data:{
+      "Trend verbs":["rose","fell","remained constant","was recorded at"],
+      "Comparison":["the highest figure was recorded for…","…was more than twice as high as…","…was roughly on a par with…"]
+    }},
+  map:{label:"Maps",
+    reminders:["Compass directions are essential (<i>to the north of, adjacent to</i>).",
+      "Organise body paragraphs <b>by location</b>, not map-by-map — it makes comparison much clearer.",
+      "Don't skip the Overview — most students forget it on maps."],
+    structure:"<b>Intro</b> — paraphrase (what, where, between which years).<br><b>Overview</b> — 2–3 sentences on the biggest overall changes, no fine detail.<br><b>Body 1</b> — one part of the map (e.g. north).<br><b>Body 2</b> — the other part (e.g. south).",
+    openings:["The two maps illustrate/depict the changes that took place in… between… and…","The given maps compare…"],
+    overview:["Overall, it is clear that the area underwent significant development, particularly in…","Overall, the most noticeable change was…"],
+    data:{
+      "Position":["to the north/south/east/west of…","in the centre of…","adjacent to…","along the…"],
+      "Change verbs":["was replaced by…","was demolished and replaced with…","was converted into…","a new… was constructed/built…"],
+      "No change":["…remained unchanged.","…stayed the same throughout this period.","no changes were made to…"]
+    }},
+  process:{label:"Process",
+    reminders:["Use <b>Present Simple Passive</b> (is heated, are transported) — <u>not</u> past tense.",
+      "Every stage needs a sequencing linker (first, next, after that, finally).",
+      "State the start and end point clearly in your overview."],
+    structure:"<b>Intro</b> — paraphrase the question.<br><b>Overview</b> — how many stages there are, the starting material and the final product.<br><b>Body 1 / Body 2</b> — walk through the stages in order, split roughly in half.",
+    openings:["The diagram illustrates the process of…","The flowchart shows how… is produced/made."],
+    overview:["Overall, there are [n] main stages in the process, beginning with… and ending with…"],
+    data:{
+      "Sequencing":["First,","Initially,","Subsequently,","Following this,","Once this stage is complete,","After that,","Finally,"],
+      "Passive voice":["…is heated to…","…are transported to…","…is then filtered/mixed/packaged…","…is left to…"]
+    }},
+  mixed:{label:"Mixed",
+    reminders:["Treat each chart according to its own rules (see the other tabs), then <b>compare between them</b>.",
+      "Your Overview must mention key features from <b>both</b> charts, not just one.",
+      "Don't give each chart its own separate essay — integrate them."],
+    structure:"<b>Intro</b> — paraphrase both charts together.<br><b>Overview</b> — the most important features across both.<br><b>Body 1 / Body 2</b> — organise by theme/category so both charts are discussed together, not one-then-the-other.",
+    openings:["The chart and table below give information about…"],
+    overview:["Overall, it is noticeable that…, while the [second chart] shows…"],
+    data:{
+      "Linking two charts":["As shown in the first chart,…, whereas the table indicates that…","This is reflected in the…"]
+    }}
+};
+
+const CHECKLIST_BASE=[
+  "Overview is present and has no exact numbers/locations in it",
+  "Verb tense is consistent (past for finished data, present passive for process)",
+  "I compared data, not just listed it",
+  "At least 2–3 higher-level linkers used naturally",
+  "No repeated sentence starters (varied openings)",
+  "150+ words, but not padded with irrelevant detail"
+];
+
+/* ───────── state ───────── */
+let curTask=1, curType="line", curPhraseTab="Openings";
+
+function setTask(t){
+  curTask=t;
+  document.querySelectorAll('#taskChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.task==String(t)));
+  $("typeRow").style.display = t===1 ? "" : "none";
+  $("task2Soon").style.display = t===2 ? "" : "none";
+  $("mainArea").style.display = t===1 ? "" : "none";
+  resetTimer(t===1?20:40);
+  if(t===1) renderType();
+}
+
+function renderTypeChips(){
+  const box=$("typeChips");box.innerHTML="";
+  Object.keys(TYPES).forEach(k=>{
+    const b=document.createElement('button');
+    b.className="chip small"+(k===curType?" on":"");
+    b.textContent=TYPES[k].label;
+    b.onclick=()=>{curType=k;renderTypeChips();renderType();};
+    box.appendChild(b);
+  });
+}
+
+function renderType(){
+  const t=TYPES[curType];
+  $("remindersTitle").textContent="Quick reminders — "+t.label;
+  $("remindersList").innerHTML=t.reminders.map(r=>"<li>"+r+"</li>").join("");
+  $("structBody").innerHTML=t.structure;
+  renderPhraseTabs();
+  renderPhraseBox();
+}
+
+function renderPhraseTabs(){
+  const tabs=["Openings","Overview","Linkers","Data language"];
+  const box=$("phraseTabs");box.innerHTML="";
+  tabs.forEach(name=>{
+    const b=document.createElement('button');
+    b.className="tab"+(name===curPhraseTab?" on":"");
+    b.textContent=name;
+    b.onclick=()=>{curPhraseTab=name;renderPhraseTabs();renderPhraseBox();};
+    box.appendChild(b);
+  });
+}
+
+function phraseBtn(text){
+  const b=document.createElement('button');
+  b.className="phrase";b.textContent=text;
+  b.onclick=()=>insertPhrase(text);
+  return b;
+}
+
+function renderPhraseBox(){
+  const t=TYPES[curType];
+  const box=$("phraseBox");box.innerHTML="";
+  if(curPhraseTab==="Openings"){
+    const g=document.createElement('div');g.className="phrasegroup";
+    g.innerHTML="<h4>Beginning phrases</h4>";
+    t.openings.forEach(p=>g.appendChild(phraseBtn(p)));
+    box.appendChild(g);
+  }else if(curPhraseTab==="Overview"){
+    const g=document.createElement('div');g.className="phrasegroup";
+    g.innerHTML="<h4>Overview starters</h4>";
+    t.overview.forEach(p=>g.appendChild(phraseBtn(p)));
+    box.appendChild(g);
+  }else if(curPhraseTab==="Linkers"){
+    Object.keys(LINKERS).forEach(cat=>{
+      const g=document.createElement('div');g.className="phrasegroup";
+      g.innerHTML="<h4>"+cat+"</h4>";
+      LINKERS[cat].forEach(p=>g.appendChild(phraseBtn(p)));
+      box.appendChild(g);
+    });
+  }else if(curPhraseTab==="Data language"){
+    Object.keys(t.data).forEach(cat=>{
+      const g=document.createElement('div');g.className="phrasegroup";
+      g.innerHTML="<h4>"+cat+"</h4>";
+      t.data[cat].forEach(p=>g.appendChild(phraseBtn(p)));
+      box.appendChild(g);
+    });
+  }
+}
+
+function insertPhrase(text){
+  const pad=$("pad");
+  const start=pad.selectionStart, end=pad.selectionEnd;
+  const before=pad.value.slice(0,start), after=pad.value.slice(end);
+  const needsSpaceBefore = before.length && !/\s$/.test(before);
+  const insert=(needsSpaceBefore?" ":"")+text+" ";
+  pad.value=before+insert+after;
+  const pos=(before+insert).length;
+  pad.focus();
+  pad.setSelectionRange(pos,pos);
+  updateWC();
+}
+
+/* ───────── word count ───────── */
+function updateWC(){
+  const words=$("pad").value.trim().split(/\s+/).filter(Boolean);
+  const n=words.length;
+  const target=curTask===1?150:250;
+  const el=$("wc");
+  el.textContent=n+" words (target "+target+"+)";
+  el.classList.toggle("ok",n>=target);
+}
+$("pad").addEventListener("input",updateWC);
+$("copyBtn").onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText($("pad").value);};
+$("clearBtn").onclick=()=>{if(confirm("Clear everything you've written?")){$("pad").value="";updateWC();}};
+
+/* ───────── checklist ───────── */
+function renderChecklist(){
+  const box=$("checklist");box.innerHTML="";
+  CHECKLIST_BASE.forEach((txt,i)=>{
+    const row=document.createElement('label');row.className="citem";
+    row.innerHTML='<input type="checkbox" id="chk'+i+'"><span>'+txt+'</span>';
+    const cb=row.querySelector('input');
+    cb.onchange=()=>row.classList.toggle('checked',cb.checked);
+    box.appendChild(row);
+  });
+}
+
+/* ───────── timer ───────── */
+let timerSecs=1200, timerHandle=null, timerRunning=false;
+function fmt(s){const m=Math.floor(s/60),r=s%60;return String(m).padStart(2,'0')+":"+String(r).padStart(2,'0');}
+function renderTimer(){$("timerNum").textContent=fmt(Math.max(0,timerSecs));}
+function resetTimer(mins){
+  clearInterval(timerHandle);timerRunning=false;
+  timerSecs=mins*60;renderTimer();
+  $("timerStart").textContent="Start";
+}
+$("timerStart").onclick=()=>{
+  if(timerRunning){clearInterval(timerHandle);timerRunning=false;$("timerStart").textContent="Start";return;}
+  timerRunning=true;$("timerStart").textContent="Pause";
+  timerHandle=setInterval(()=>{
+    timerSecs--;renderTimer();
+    if(timerSecs<=0){clearInterval(timerHandle);timerRunning=false;$("timerStart").textContent="Start";}
+  },1000);
+};
+$("timerReset").onclick=()=>resetTimer(curTask===1?20:40);
+
+/* ───────── theme toggle ───────── */
+function isDarkNow(){
+  const attr=document.documentElement.getAttribute('data-theme');
+  if(attr==='dark')return true;
+  if(attr==='light')return false;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function refreshThemeBtn(){
+  $("themeToggle").textContent = isDarkNow() ? "☀️ Light" : "🌙 Dark";
+}
+$("themeToggle").onclick=()=>{
+  document.documentElement.setAttribute('data-theme', isDarkNow() ? 'light' : 'dark');
+  refreshThemeBtn();
+};
+refreshThemeBtn();
+
+/* ───────── wire up task chips ───────── */
+document.querySelectorAll('#taskChips .chip').forEach(c=>{
+  c.onclick=()=>setTask(Number(c.dataset.task));
+});
+
+/* ───────── init ───────── */
+renderTypeChips();
+renderChecklist();
+setTask(1);
+updateWC();
+</script>
+</body>
+</html>
