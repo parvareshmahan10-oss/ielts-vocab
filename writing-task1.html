@@ -98,6 +98,18 @@
 
   .soon{text-align:center;padding:30px 10px;color:rgba(var(--navy-rgb),.55);font-size:14px}
   .soon b{color:var(--navy)}
+
+  .synsearch{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:11px;background:var(--cream);
+    font-size:14px;font-family:var(--sans);color:var(--navy);margin-bottom:12px;outline:none}
+  .synsearch:focus{border-color:var(--clay)}
+  .synbox{max-height:360px;overflow-y:auto;padding-right:4px}
+  .syngroup{margin-bottom:14px}
+  .syngroup h4{font-size:13.5px;font-weight:700;color:var(--navy);margin:0 0 6px;font-family:var(--serif)}
+  .synchips{display:flex;flex-wrap:wrap;gap:6px}
+  .synchip{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--cream);color:var(--navy);
+    font-size:12.5px;font-family:var(--serif);cursor:pointer}
+  .synchip:hover{border-color:var(--clay);background:var(--cream-soft)}
+  .synempty{text-align:center;color:rgba(var(--navy-rgb),.45);font-size:13px;padding:20px 0}
 </style>
 </head>
 <body>
@@ -129,6 +141,12 @@
     <div id="typeRow" style="margin-top:12px">
       <div class="chips" id="typeChips"></div>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="cardtitle">Synonym finder <span style="font-weight:400;color:rgba(var(--navy-rgb),.5);font-size:12px">— search any everyday word, click a result to insert it</span></div>
+    <input class="synsearch" id="synSearch" type="text" placeholder="e.g. change, increase, big, fast, similar…" autocomplete="off">
+    <div class="synbox" id="synBox"></div>
   </div>
 
   <div id="task2Soon" class="card soon" style="display:none">
@@ -231,9 +249,16 @@ const TYPES = {
     openings:["The two maps illustrate/depict the changes that took place in… between… and…","The given maps compare…"],
     overview:["Overall, it is clear that the area underwent significant development, particularly in…","Overall, the most noticeable change was…"],
     data:{
-      "Position":["to the north/south/east/west of…","in the centre of…","adjacent to…","along the…"],
-      "Change verbs":["was replaced by…","was demolished and replaced with…","was converted into…","a new… was constructed/built…"],
-      "No change":["…remained unchanged.","…stayed the same throughout this period.","no changes were made to…"]
+      "Position":["to the north/south/east/west of…","in the centre/heart of…","adjacent to…","in close proximity to…",
+        "in the vicinity of…","on the outskirts of…","bordering…","flanked by…","overlooking…","situated along…","in the immediate surroundings of…"],
+      "Added / new":["a new… was constructed/erected…","…was established/introduced","…came into existence",
+        "…was incorporated into the layout","…was added to the northern/southern section"],
+      "Changed / replaced":["was replaced by…","gave way to…","was transformed into…","was converted into…",
+        "was redeveloped as…","underwent extensive redevelopment","was superseded by…","emerged in place of…","encroached upon…"],
+      "Removed / demolished":["was demolished","was cleared away","was torn down","was removed entirely",
+        "disappeared completely","was eradicated to make way for…"],
+      "Unchanged":["…remained unchanged/untouched.","…remained largely intact.","…persisted in its original form.",
+        "…underwent no significant alteration.","…stayed exactly as it had been.","no alterations were made to…"]
     }},
   process:{label:"Process",
     reminders:["Use <b>Present Simple Passive</b> (is heated, are transported) — <u>not</u> past tense.",
@@ -257,6 +282,57 @@ const TYPES = {
       "Linking two charts":["As shown in the first chart,…, whereas the table indicates that…","This is reflected in the…"]
     }}
 };
+
+const SYN_BANK=[
+  {word:"increase (verb)",syns:["rise","climb","grow","surge","soar","escalate","expand","pick up","shoot up","jump","edge up"]},
+  {word:"increase (noun)",syns:["a rise","a growth","a surge","an upturn","an upsurge","a jump","an escalation","an increment"]},
+  {word:"decrease (verb)",syns:["fall","decline","drop","plunge","plummet","slump","dip","dwindle","shrink","contract","tumble","tail off"]},
+  {word:"decrease (noun)",syns:["a fall","a decline","a drop","a downturn","a slump","a dip","a reduction","a contraction"]},
+  {word:"change (general)",syns:["shift","alter","transform","vary","evolve","modify","undergo a transformation"]},
+  {word:"fluctuate / fluctuation",syns:["fluctuate","oscillate","go up and down","be erratic","a fluctuation","volatility"]},
+  {word:"remain stable / stability",syns:["remain stable","stay constant","level off","plateau","stagnate","hold steady","show no change"]},
+  {word:"large / big",syns:["substantial","considerable","significant","massive","sizeable","vast","notable","appreciable"]},
+  {word:"small / slight",syns:["marginal","slight","minor","negligible","minimal","modest","insignificant"]},
+  {word:"rapid (of change)",syns:["rapid","swift","sudden","abrupt","sharp","dramatic","precipitous"]},
+  {word:"gradual (of change)",syns:["gradual","steady","gentle","incremental","progressive"]},
+  {word:"highest point",syns:["peak","summit","high point","zenith","apex","culminate at…","top out at…"]},
+  {word:"lowest point",syns:["trough","low point","nadir","bottom out at…","hit its lowest ebb"]},
+  {word:"show / illustrate",syns:["illustrate","depict","reveal","demonstrate","present","portray","indicate"]},
+  {word:"compare / contrast",syns:["contrast with…","differ from…","be juxtaposed with…","stand in contrast to…"]},
+  {word:"similar to",syns:["comparable to…","analogous to…","akin to…","on a par with…","mirror…"]},
+  {word:"different from",syns:["distinct from…","in contrast to…","diverge from…","deviate from…"]},
+  {word:"majority",syns:["the bulk of…","the vast majority of…","most of…","the lion's share of…"]},
+  {word:"minority",syns:["a small fraction of…","a handful of…","a negligible proportion of…"]},
+  {word:"approximately",syns:["roughly","around","nearly","just under…","just over…","in the region of…","in the vicinity of…"]},
+  {word:"significant / important",syns:["notable","considerable","substantial","prominent","noteworthy"]},
+  {word:"exceed / surpass",syns:["surpass","outstrip","outnumber","overtake","eclipse"]},
+  {word:"account for (proportion)",syns:["make up…","constitute…","represent…","comprise…"]},
+  {word:"double / multiply",syns:["double","twice as much as…","triple","a twofold increase","multiply"]},
+  {word:"gap / difference",syns:["disparity","discrepancy","differential","divide"]}
+];
+
+function renderSynBank(filter){
+  const f=(filter||"").trim().toLowerCase();
+  const box=$("synBox");box.innerHTML="";
+  let shown=0;
+  SYN_BANK.forEach(entry=>{
+    const relevant = !f || entry.word.toLowerCase().includes(f) || entry.syns.some(s=>s.toLowerCase().includes(f));
+    if(!relevant)return;
+    shown++;
+    const g=document.createElement('div');g.className="syngroup";
+    const h=document.createElement('h4');h.textContent=entry.word;g.appendChild(h);
+    const chips=document.createElement('div');chips.className="synchips";
+    entry.syns.forEach(s=>{
+      const b=document.createElement('button');b.className="synchip";b.textContent=s;
+      b.onclick=()=>insertPhrase(s);
+      chips.appendChild(b);
+    });
+    g.appendChild(chips);
+    box.appendChild(g);
+  });
+  if(shown===0){box.innerHTML='<div class="synempty">No matches. Try a simpler word, like "change" or "big".</div>';}
+}
+$("synSearch").addEventListener("input",e=>renderSynBank(e.target.value));
 
 const CHECKLIST_BASE=[
   "Overview is present and has no exact numbers/locations in it",
@@ -430,6 +506,7 @@ document.querySelectorAll('#taskChips .chip').forEach(c=>{
 /* ───────── init ───────── */
 renderTypeChips();
 renderChecklist();
+renderSynBank("");
 setTask(1);
 updateWC();
 </script>
